@@ -5,9 +5,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
+import re  # Import regex module for input validation
 
 # Load and prepare the dataset
-@st.cache
+@st.cache_data
 def load_data():
     df = pd.read_csv('justice.csv')
     df.rename(columns={'facts': 'facts', 'first_party': 'first_party', 'second_party': 'second_party', 'first_party_winner': 'winner_index'}, inplace=True)
@@ -25,7 +26,7 @@ def load_data():
     return df
 
 # Function to train the model
-@st.cache
+@st.cache_data
 def train_model(df):
     vectorizer = TfidfVectorizer(max_features=2000)
     X = vectorizer.fit_transform(df['merged_facts'])
@@ -39,6 +40,25 @@ def train_model(df):
     report = classification_report(y_test, y_pred, output_dict=True)
     
     return model, vectorizer, report
+
+# Function to validate input
+def validate_input(first_party, second_party, facts):
+    if not first_party.strip():
+        return "First Party cannot be empty."
+    
+    if not second_party.strip():
+        return "Second Party cannot be empty."
+    
+    if not facts.strip():
+        return "Case facts cannot be empty."
+    
+    if len(facts) < 20:
+        return "Case facts must be at least 20 characters long."
+    
+    if not re.match(r"^[a-zA-Z0-9\s.,!?'-]+$", facts):
+        return "Case facts contain invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+    
+    return None  # No errors
 
 # Function to predict outcomes
 def predict_outcome(model, vectorizer, first_party, second_party, facts):
@@ -76,12 +96,17 @@ def main():
     facts = st.text_area("Enter Case Facts")
 
     if st.button("Predict"):
-        prediction = predict_outcome(model, vectorizer, first_party, second_party, facts)
-        st.write(f"Chances of Petitioner winning: {prediction['Petitioner']:.2f}%")
-        st.write(f"Chances of Respondent winning: {prediction['Respondent']:.2f}%")
+        error_message = validate_input(first_party, second_party, facts)
         
-        # Plot the pie chart
-        plot_pie_chart(prediction)
+        if error_message:
+            st.error(error_message)  # Show validation error
+        else:
+            prediction = predict_outcome(model, vectorizer, first_party, second_party, facts)
+            st.write(f"Chances of Petitioner winning: {prediction['Petitioner']:.2f}%")
+            st.write(f"Chances of Respondent winning: {prediction['Respondent']:.2f}%")
+            
+            # Plot the pie chart
+            plot_pie_chart(prediction)
 
 if __name__ == "__main__":
     main()
