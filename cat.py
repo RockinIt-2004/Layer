@@ -137,7 +137,7 @@ def main():
 
         st.write(f"**Next Steps:** {case_info['next_steps']}")
         st.markdown(
-            '<a href="https://your-winning-prediction-app-url" target="_blank" style="text-decoration: none;">'
+            '<a href="https://svncnve9h84cxcr2tzeqhd.streamlit.app/" target="_blank" style="text-decoration: none;">'
             '<button style="background-color: #008CBA; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">'
             '🔮 Predict Case Winning Probability'
             '</button></a>',
