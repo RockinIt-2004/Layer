@@ -51,6 +51,7 @@ category_links = {
     "Consumer Law": "https://www.indiankanoon.org/search/?formInput=consumer+law",
     "Corporate Law": "https://www.indiankanoon.org/search/?formInput=corporate+law",
     "Cyber Law": "https://www.indiankanoon.org/search/?formInput=cyber+law",
+    "Criminal Procedure": "https://indiankanoon.org/search/?formInput=criminal+procedure",
 }
 
 
